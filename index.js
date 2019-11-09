@@ -33,7 +33,7 @@ commands.push(['sync', 'Update user roles in all bound servers, based on google 
         message: 'Synchronizing',
     });
     await bl.bindToChannel(bot, channelId);
-    const syncSuccessful = await bl.sync(bot);
+    const syncSuccessful = await bl.sync(bot, channelId);
     if (syncSuccessful) {
         bot.sendMessage({
             to: channelId,

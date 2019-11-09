@@ -28,7 +28,7 @@ async function bindToChannel(bot, channelId) {
     }
 }
 
-async function sync(bot) {
+async function sync(bot, channelId) {
     const state = await getState();
     const boundChannels = state.boundChannels || [];
     const data = await sheet.getData();
@@ -39,8 +39,7 @@ async function sync(bot) {
     const allRolesInSheet = data.map(([name, rank]) => rank);
     const processedServers = [];
 
-    await Promise.all(boundChannels.map(async channelId => {
-        const serverId = (bot.channels[channelId] || {}).guild_id;
+    async function runSync(serverId) {
         if (!serverId || processedServers.includes(serverId)) {
             return;
         } else {
@@ -94,7 +93,17 @@ async function sync(bot) {
             const newRoles = filteredRoleIds.concat(role[1]);
             await setUserRoles(serverId, user.id, newRoles);
         }));
-    }));
+    }
+
+    if (!channelId) {
+        await Promise.all(boundChannels.map(channelId => {
+            const serverId = (bot.channels[channelId] || {}).guild_id;
+            return runSync(serverId);
+        }));
+    } else {
+        const serverId = (bot.channels[channelId] || {}).guild_id;
+        await runSync(serverId);
+    }
 
     return true;
 }
