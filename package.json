@@ -1,0 +1,20 @@
+{
+    "name": "autoroler",
+    "scripts": {
+        "start": "node .",
+        "package": "pkg package.json --target host --output build/bot.exe --options --max-stack-size=2048"
+    },
+    "dependencies": {
+        "bcrypt": "^3.0.6",
+        "discord.io": "github:woor/discord.io#gateway_v6",
+        "google-spreadsheet": "^2.0.8",
+        "request": "^2.88.0"
+    },
+    "devDependencies": {
+        "eslint": "^6.6.0",
+        "eslint-plugin-import": "^2.18.2",
+        "pkg": "^4.4.0"
+    },
+    "bin": "index.js",
+    "pkg": {}
+}
