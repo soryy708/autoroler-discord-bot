@@ -187,10 +187,10 @@ commands.push(['help', 'Show this message', (userName, userId, channelId) => {
             command = 'set-url <new url>';
         }
         else if (command === 'set-ranks-column') {
-            command = 'set-ranks-column <new column index (starting at 0)>';
+            command = 'set-ranks-column <new column index (starting at 1)>';
         }
         else if (command === 'set-names-column') {
-            command = 'set-names-column <new column index (starting at 0)>';
+            command = 'set-names-column <new column index (starting at 1)>';
         }
 
         return `\`!${command}\`\t- ${description}`;
