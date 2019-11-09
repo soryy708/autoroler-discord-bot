@@ -1,12 +1,12 @@
 const bl = require('../../bl');
 
-module.exports = ['sync', 'Update user roles in all bound servers, based on google sheet', async (bot, userName, userId, channelId) => {
+module.exports = ['sync', 'Update user roles in all bound servers, based on google sheet', async (bot, userName, userId, commandId, channelId, serverId) => {
     bot.sendMessage({
         to: channelId,
         message: 'Synchronizing',
     });
     await bl.bindToChannel(bot, channelId);
-    const syncSuccessful = await bl.sync(bot, channelId);
+    const syncSuccessful = await bl.sync(bot, serverId, commandId);
     if (syncSuccessful) {
         bot.sendMessage({
             to: channelId,

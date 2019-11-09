@@ -29,8 +29,10 @@ bot.on('message', async (userName, userId, channelId, message, evt) => {
             const serverId = (bot.channels[channelId] || {}).guild_id;
             const commandId = getCommandId();
 
+            logUtil.log('verbose', serverId, commandId, 'Received command', {command: cmd});
+
             try {
-                await relevantCommand(bot, userName, userId, channelId, message, evt, args);
+                await relevantCommand(bot, userName, userId, commandId, channelId, serverId, message, evt, args);
             } catch (e) {
                 logUtil.log('error', serverId, commandId, 'Exception when processing command', {exception: e});
                 bot.sendMessage({

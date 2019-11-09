@@ -1,7 +1,7 @@
 const bl = require('../../bl');
 const auth = require('../../auth');
 
-module.exports = ['auth', 'Authenticate as an administrator', async (bot, userName, userId, channelId, message, evt, args) => {
+module.exports = ['auth', 'Authenticate as an administrator', async (bot, userName, userId, commandId, channelId, serverId, message, evt, args) => {
     if (args.length <= 1) {
         const isAuthenticated = await auth.isAuthenticated(userId);
         if (isAuthenticated) {

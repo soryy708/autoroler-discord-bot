@@ -2,6 +2,7 @@ const request = require('request');
 const sheet = require('./sheet');
 const stateFileUtil = require('./util/state-file');
 const secrets = require('./secrets.json');
+const logUtil = require('./util/log');
 
 const stateFilePath = 'data.json';
 
@@ -28,11 +29,12 @@ async function bindToChannel(bot, channelId) {
     }
 }
 
-async function sync(bot, channelId) {
+async function sync(bot, requestServerId, commandId) {
     const state = await getState();
     const boundChannels = state.boundChannels || [];
     const data = await sheet.getData();
     if (data.length === 0) {
+        logUtil.log('warn', requestServerId, commandId, 'Could not get google sheet data');
         return false;
     }
 
@@ -53,6 +55,7 @@ async function sync(bot, channelId) {
         const mappedServerRoles = relevantServerRoles.map(serverRole => [serverRole.name, serverRole.id]);
         const serverUsers = Object.values(bot.users);
 
+        const groupedLog = logUtil.groupedLog();
         await Promise.all(data.map(async ([name, rank]) => {
             function setUserRoles(serverId, userId, roles) {
                 // https://github.com/izy521/discord.io/issues/289#issuecomment-418552716
@@ -81,6 +84,13 @@ async function sync(bot, channelId) {
             const user = serverUsers.find((serverUser) => serverUser.username.includes(name));
             const role = mappedServerRoles.find(([roleName, id]) => roleName.includes(rank));
             if (!user || !role) {
+                if (!user) {
+                    groupedLog.log('warn', serverId, commandId, 'Could not find user in server', {username: name});
+                }
+                if (!role) {
+                    groupedLog.log('warn', serverId, commandId, 'Could not find role in server', {role: rank});
+                }
+
                 return;
             }
 
@@ -90,19 +100,31 @@ async function sync(bot, channelId) {
             const filteredRoleIds = currentRoleIds.filter(roleId => {
                 return relevantServerRoles.reduce((prev, [serverRoleName, serverRoleId]) => prev || serverRoleId === roleId, false);
             });
+            const removedRoles = currentRoleIds.filter(role => {
+                const roleId = role[1];
+                return !relevantServerRoles.reduce((prev, [serverRoleName, serverRoleId]) => prev || serverRoleId === roleId, false);
+            });
+            const removedRoleNames = removedRoles.map(role => role[0]);
             const newRoles = filteredRoleIds.concat(role[1]);
-            await setUserRoles(serverId, user.id, newRoles);
-        }));
+            try {
+                await setUserRoles(serverId, user.id, newRoles);
+                groupedLog.log('info', serverId, commandId, 'Changed user role', {username: user.username, removedRoles: removedRoleNames, addedRoles: role[0]});
+            } catch(error) {
+                groupedLog.log('error', serverId, commandId, 'User role change failed', {username: user.username, newRoles, error});
+            }
+        }))
+            .finally(() => {
+                groupedLog.flush();
+            });
     }
 
-    if (!channelId) {
+    if (!requestServerId) {
         await Promise.all(boundChannels.map(channelId => {
             const serverId = (bot.channels[channelId] || {}).guild_id;
             return runSync(serverId);
         }));
     } else {
-        const serverId = (bot.channels[channelId] || {}).guild_id;
-        await runSync(serverId);
+        await runSync(requestServerId);
     }
 
     return true;

@@ -1,7 +1,8 @@
 const auth = require('../../auth');
 const sheet = require('../../sheet');
+const logUtil = require('../../util/log');
 
-module.exports = ['set-names-column', 'Change which google sheet column I should read names from when synchronizing', async (bot, userName, userId, channelId, message, evt, args) => {
+module.exports = ['set-names-column', 'Change which google sheet column I should read names from when synchronizing', async (bot, userName, userId, commandId, channelId, serverId, message, evt, args) => {
     if (args.length <= 1) {
         bot.sendMessage({
             to: channelId,
@@ -18,6 +19,7 @@ module.exports = ['set-names-column', 'Change which google sheet column I should
             to: channelId,
             message: 'Names column set',
         });
+        logUtil.log('info', serverId, commandId, 'Names column changed', {requestor: userName, newColumnIndex});
 
     } else {
         bot.sendMessage({

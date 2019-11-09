@@ -1,6 +1,6 @@
 const bl = require('../../bl');
 
-module.exports = ['bind', 'Notify this channel when events happen', async (bot, userName, userId, channelId) => {
+module.exports = ['bind', 'Notify this channel when events happen', async (bot, userName, userId, commandId, channelId, serverId) => {
     if (await bl.isBoundToChannel(bot, channelId)) {
         bot.sendMessage({
             to: channelId,
