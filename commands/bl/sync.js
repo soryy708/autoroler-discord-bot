@@ -1,6 +1,6 @@
 const bl = require('../../bl');
 
-module.exports = ['sync', 'Update user roles in all bound servers, based on google sheet', async (bot, userName, userId, commandId, channelId, serverId) => {
+module.exports = ['sync', 'Update user roles in this server, based on google sheet', async (bot, userName, userId, commandId, channelId, serverId) => {
     bot.sendMessage({
         to: channelId,
         message: 'Synchronizing',
