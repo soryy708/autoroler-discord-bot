@@ -1,5 +1,5 @@
 const bcrypt = require('bcrypt');
-const stateFile = require('./state-file');
+const stateFile = require('./util/state-file');
 
 const stateFilePath = 'admins.json';
 

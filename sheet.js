@@ -1,5 +1,5 @@
 const GoogleSpreadsheet = require('google-spreadsheet');
-const stateFile = require('./state-file');
+const stateFile = require('./util/state-file');
 const secrets = require('./secrets.json');
 
 const stateFilePath = 'data.json';
