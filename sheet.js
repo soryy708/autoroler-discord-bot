@@ -1,15 +1,15 @@
 const GoogleSpreadsheet = require('google-spreadsheet');
-const stateFile = require('./util/state-file');
+const stateFileUtil = require('./util/state-file');
 const secrets = require('./secrets.json');
 
 const stateFilePath = 'data.json';
 
 function getState() {
-    return stateFile.getState(stateFilePath);
+    return stateFileUtil.getState(stateFilePath);
 }
 
 function setState(newState) {
-    return stateFile.setState(stateFilePath, newState);
+    return stateFileUtil.setState(stateFilePath, newState);
 }
 
 async function setSourceUrl(url) {

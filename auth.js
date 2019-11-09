@@ -1,14 +1,14 @@
 const bcrypt = require('bcrypt');
-const stateFile = require('./util/state-file');
+const stateFileUtil = require('./util/state-file');
 
 const stateFilePath = 'admins.json';
 
 function getState() {
-    return stateFile.getState(stateFilePath);
+    return stateFileUtil.getState(stateFilePath);
 }
 
 function setState(newState) {
-    return stateFile.setState(stateFilePath, newState);
+    return stateFileUtil.setState(stateFilePath, newState);
 }
 
 async function isAuthenticated(userId) {
