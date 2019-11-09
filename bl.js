@@ -40,7 +40,7 @@ async function sync(bot, channelId) {
     const processedServers = [];
 
     async function runSync(serverId) {
-        if (!serverId || processedServers.includes(serverId)) {
+        if (!serverId || processedServers.includes(serverId) || !bot.servers[serverId]) {
             return;
         } else {
             processedServers.push(serverId);
