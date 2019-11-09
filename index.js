@@ -2,6 +2,12 @@ const Discord = require('discord.io');
 const secrets = require('./secrets.json');
 const commands = require('./commands');
 const bl = require('./bl');
+const logUtil = require('./util/log');
+
+let currentCommandId = 0;
+function getCommandId() {
+    return currentCommandId++;
+}
 
 const bot = new Discord.Client({
     token: secrets.token,
@@ -9,7 +15,7 @@ const bot = new Discord.Client({
 });
 
 bot.on('ready', (evt) => {
-    console.log('Connected');
+    logUtil.log('info', null, null, 'Connected');
 });
 
 bot.on('message', async (userName, userId, channelId, message, evt) => {
@@ -20,22 +26,32 @@ bot.on('message', async (userName, userId, channelId, message, evt) => {
         
         const relevantCommand = commands.getCommandListener(cmd);
         if (relevantCommand) {
-            await relevantCommand(bot, userName, userId, channelId, message, evt, args);
+            const serverId = (bot.channels[channelId] || {}).guild_id;
+            const commandId = getCommandId();
+
+            try {
+                await relevantCommand(bot, userName, userId, channelId, message, evt, args);
+            } catch (e) {
+                logUtil.log('error', serverId, commandId, 'Exception when processing command', {exception: e});
+                bot.sendMessage({
+                    to: channelId,
+                    message: `I encountered an error when processing this.\nYour commandId is ${commandId}. Please see the log for details.`,
+                });
+            }
         }
     }
 });
 
-bot.on('disconnect', (errMsg, code) => {
-    console.log(`Error connecting (${code}): ${errMsg}`);
+bot.on('disconnect', (errorMessage, code) => {
+    logUtil.log('error', null, null, 'Error connecting', {code, errorMessage});
 });
 
 process
     .on('unhandledRejection', (reason, promise) => {
-        console.log(reason, 'Unhandled rejection at Promise', promise);
+        logUtil.log('error', null, null, 'Unhandled rejection at Promise', {reason, promise});
         bl.sendMessageToAllBoundChannels(bot, 'I\'ve encountered an async error. Please see the log.');
     })
-    .on('uncaughtException', err => {
-        console.log('Uncaught exception thrown');
-        console.log(err);
+    .on('uncaughtException', exception => {
+        logUtil.log('error', null, null, 'Uncaught exception thrown', {exception});
         bl.sendMessageToAllBoundChannels(bot, 'I\'ve encountered an error. Please see the log.');
     });

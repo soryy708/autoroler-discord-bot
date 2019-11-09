@@ -3,3 +3,4 @@ build/*
 secrets.json
 admins.json
 data.json
+log.txt
