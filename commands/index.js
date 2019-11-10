@@ -6,7 +6,7 @@ commands.push(
     ...require('./sheets')
 );
 
-commands.push(['help', 'Show this message', (bot, userName, userId, channelId) => {
+commands.push(['help', 'Show this message', (bot, userName, userId, commandId, channelId) => {
     const commandDescriptions = commands.map(arr => {
         let command = arr[0];
         const description = arr[1];
