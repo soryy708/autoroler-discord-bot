@@ -79,15 +79,61 @@ async function getData() {
         doc.getCells(worksheet.id, {
             'min-col': Math.min(state.sheetNamesColumn, state.sheetRanksColumn),
             'max-col': Math.max(state.sheetNamesColumn, state.sheetRanksColumn),
-            'return-empty': true,
+            'return-empty': false,
         }, (err, cells) => {
             if (err) {
                 reject(err);
                 return;
             }
     
-            const names = cells.filter(cell => cell.col === state.sheetNamesColumn);
-            const ranks = cells.filter(cell => cell.col === state.sheetRanksColumn);
+            const rawNames = cells.filter(cell => cell.col === state.sheetNamesColumn).sort((a, b) => a.row - b.row);
+            const rawRanks = cells.filter(cell => cell.col === state.sheetRanksColumn).sort((a, b) => a.row - b.row);
+
+            const names = [];
+            if (rawNames.length > 0) {
+                for(let i = 0; i < rawNames[0].row; ++i) {
+                    names.push({
+                        col: rawNames[0].col,
+                        row: i,
+                        _value: '',
+                    });
+                }
+                rawNames.forEach((rawName, i) => {
+                    names.push(rawName);
+                    if (i + 1 < rawNames.length) {
+                        for (let j = rawNames[i].row + 1; j < rawNames[i + 1].row; ++j) {
+                            names.push({
+                                col: rawName.col,
+                                row: j,
+                                _value: '',
+                            });
+                        }
+                    }
+                });
+            }
+            const ranks = [];
+            if (rawRanks.length > 0) {
+                for(let i = 0; i < rawRanks[0].row; ++i) {
+                    ranks.push({
+                        col: rawRanks[0].col,
+                        row: i,
+                        _value: '',
+                    });
+                }
+                rawRanks.forEach((rawRank, i) => {
+                    ranks.push(rawRank);
+                    if (i + 1 < rawRanks.length) {
+                        for (let j = rawRanks[i].row + 1; j < rawRanks[i + 1].row; ++j) {
+                            ranks.push({
+                                col: rawRank.col,
+                                row: j,
+                                _value: '',
+                            });
+                        }
+                    }
+                });
+            }
+
             const result = [];
             
             for (let i = 0; i < names.length && i < ranks.length; ++i) {
