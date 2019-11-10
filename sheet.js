@@ -137,8 +137,8 @@ async function getData() {
             const result = [];
             
             for (let i = 0; i < names.length && i < ranks.length; ++i) {
-                const name = i < names.length ? names[i]._value : null;
-                const rank = i < ranks.length ? ranks[i]._value : null;
+                const name = i < names.length ? names[i]._value : '';
+                const rank = i < ranks.length ? ranks[i]._value : '';
                 if (name !== '' && rank !== '') {
                     result.push([name, rank]);
                 }
