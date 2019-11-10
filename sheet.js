@@ -48,18 +48,20 @@ async function getData() {
 
     const doc = new GoogleSpreadsheet(sheetKey);
     
-    await new Promise((resolve, reject) => {
-        doc.useServiceAccountAuth({
-            client_email: secrets.gcloud_client_email,
-            private_key: secrets.gcloud_private_key,
-        }, (err) => {
-            if (err) {
-                reject(err);
-                return;
-            }
-            resolve();
+    if (secrets.gcloud_client_email && secrets.gcloud_private_key) {
+        await new Promise((resolve, reject) => {
+            doc.useServiceAccountAuth({
+                client_email: secrets.gcloud_client_email,
+                private_key: secrets.gcloud_private_key,
+            }, (err) => {
+                if (err) {
+                    reject(err);
+                    return;
+                }
+                resolve();
+            });
         });
-    });
+    }
 
     const info = await new Promise((resolve, reject) => {
         doc.getInfo((err, info) => {
