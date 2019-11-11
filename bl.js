@@ -74,7 +74,16 @@ async function sync(bot, requestServerId, commandId) {
                             reject(error);
                         }
                         if (response.statusCode !== 204) {
-                            reject(body);
+                            if (response.statusCode === 429) {
+                                const retryTimeout = body.retry_after;
+                                setTimeout(() => {
+                                    setUserRoles(serverId, userId, roles)
+                                        .then(body => resolve(body))
+                                        .catch(e => reject(e));
+                                }, retryTimeout);
+                            } else {
+                                reject(body);
+                            }
                         }
                         resolve(body);
                     });
