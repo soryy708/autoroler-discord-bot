@@ -113,12 +113,13 @@ async function sync(bot, requestServerId, commandId) {
             const currentRoleIds = currentRoles.map(role => role.id);
 
             const filteredRoleIds = currentRoleIds.filter(roleId => {
-                return mappedServerRoles.reduce((prev, [serverRoleName, serverRoleId]) => (prev || serverRoleId === roleId), false);
-            });
-            const removedRoles = currentRoles.filter(roleId => {
                 return !mappedServerRoles.reduce((prev, [serverRoleName, serverRoleId]) => (prev || serverRoleId === roleId), false);
             });
-            const removedRoleNames = removedRoles.map(role => role[0]);
+            const removedRoleIds = currentRoles.filter(roleId => {
+                return mappedServerRoles.reduce((prev, [serverRoleName, serverRoleId]) => (prev || serverRoleId === roleId), false);
+            });
+            const removedRoles = removedRoleIds.map(roleId => server.roles[roleId]);
+            const removedRoleNames = removedRoles.map(role => role.name);
             const newRoles = filteredRoleIds.concat(role[1]);
             try {
                 await setUserRoles(serverId, user.id, newRoles);
