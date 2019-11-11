@@ -81,7 +81,13 @@ async function sync(bot, requestServerId, commandId) {
                 });
             }
 
-            const user = serverUsers.find((serverUser) => serverUser.username.includes(name));
+            const member = Object.values(server.members).find(serverMember => (serverMember.nick && serverMember.nick.includes(name)));
+            let user = null;
+            if (member) {
+                user = serverUsers.find(serverUser => serverUser.id === member.id);
+            } else {
+                user = serverUsers.find(serverUser => serverUser.username.includes(name));
+            }
             const role = mappedServerRoles.find(([roleName, id]) => roleName.includes(rank));
             if (!user || !role) {
                 if (!user) {
