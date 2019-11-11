@@ -109,8 +109,8 @@ async function sync(bot, requestServerId, commandId) {
             try {
                 await setUserRoles(serverId, user.id, newRoles);
                 groupedLog.log('info', serverId, commandId, 'Changed user role', {username: user.username, removedRoles: removedRoleNames, addedRoles: role[0]});
-            } catch(error) {
-                groupedLog.log('error', serverId, commandId, 'User role change failed', {username: user.username, newRoles, error});
+            } catch(e) {
+                groupedLog.log('error', serverId, commandId, 'User role change failed', {username: user.username, newRoles, exception: e.toString(), stackTrace: e.stack});
             }
         }))
             .finally(() => {

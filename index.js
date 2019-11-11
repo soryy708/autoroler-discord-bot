@@ -34,7 +34,7 @@ bot.on('message', async (userName, userId, channelId, message, evt) => {
             try {
                 await relevantCommand(bot, userName, userId, commandId, channelId, serverId, message, evt, args);
             } catch (e) {
-                logUtil.log('error', serverId, commandId, 'Exception when processing command', {exception: e});
+                logUtil.log('error', serverId, commandId, 'Exception when processing command', {exception: e.toString(), stackTrace: e.stack});
                 bot.sendMessage({
                     to: channelId,
                     message: `I encountered an error when processing this.\nYour commandId is ${commandId}. Please see the log for details.`,
