@@ -109,14 +109,12 @@ async function sync(bot, requestServerId, commandId) {
                 return;
             }
 
-            const currentRoles = server.members[user.id].roles;
-            const currentRoleIds = currentRoles.map(role => role.id);
-
-            const filteredRoleIds = currentRoleIds.filter(roleId => {
-                return !mappedServerRoles.reduce((prev, [serverRoleName, serverRoleId]) => (prev || serverRoleId === roleId), false);
-            });
-            const removedRoleIds = currentRoles.filter(roleId => {
+            const currentRoleIds = server.members[user.id].roles;
+            const removedRoleIds = currentRoleIds.filter(roleId => {
                 return mappedServerRoles.reduce((prev, [serverRoleName, serverRoleId]) => (prev || serverRoleId === roleId), false);
+            });
+            const filteredRoleIds = currentRoleIds.filter(roleId => {
+                return !removedRoleIds.reduce((prev, removedRoleId) => (prev || removedRoleId === roleId), false);
             });
             const removedRoles = removedRoleIds.map(roleId => server.roles[roleId]);
             const removedRoleNames = removedRoles.map(role => role.name);
