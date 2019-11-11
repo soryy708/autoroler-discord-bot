@@ -50,7 +50,7 @@ async function sync(bot, requestServerId, commandId) {
 
         const server = bot.servers[serverId];
         const relevantServerRoles = Object.values(server.roles).filter(serverRole => {
-            return allRolesInSheet.reduce((prev, sheetRole) => prev || serverRole.name.includes(sheetRole), false);
+            return allRolesInSheet.reduce((prev, sheetRole) => (prev || serverRole.name.includes(sheetRole)), false);
         });
         const mappedServerRoles = relevantServerRoles.map(serverRole => [serverRole.name, serverRole.id]);
         const serverUsers = Object.values(bot.users);
@@ -104,11 +104,10 @@ async function sync(bot, requestServerId, commandId) {
             const currentRoleIds = currentRoles.map(role => role.id);
 
             const filteredRoleIds = currentRoleIds.filter(roleId => {
-                return relevantServerRoles.reduce((prev, [serverRoleName, serverRoleId]) => prev || serverRoleId === roleId, false);
+                return mappedServerRoles.reduce((prev, [serverRoleName, serverRoleId]) => (prev || serverRoleId === roleId), false);
             });
-            const removedRoles = currentRoleIds.filter(role => {
-                const roleId = role[1];
-                return !relevantServerRoles.reduce((prev, [serverRoleName, serverRoleId]) => prev || serverRoleId === roleId, false);
+            const removedRoles = currentRoles.filter(roleId => {
+                return !mappedServerRoles.reduce((prev, [serverRoleName, serverRoleId]) => (prev || serverRoleId === roleId), false);
             });
             const removedRoleNames = removedRoles.map(role => role[0]);
             const newRoles = filteredRoleIds.concat(role[1]);
